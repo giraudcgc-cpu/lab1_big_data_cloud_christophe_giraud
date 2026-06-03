@@ -17,6 +17,7 @@ def cleaned_marathos():
 
     return (
 # --- trim all strings ---
+# --- and renaming the column ---
         df
         .withColumn("event_name", trim(col("event_name")))
         .withColumn("athlete_club", trim(col("athlete_club")))
@@ -25,6 +26,8 @@ def cleaned_marathos():
         .withColumn("athlete_age_category", trim(col("athlete_age_category")))
         .withColumn("event_distance_or_length", trim(col("event_distance_or_length")))
         .withColumn("athlete_performance", trim(col("athlete_performance")))
+
+        .withColumnRenamed("event_distance_or_length", "event_distance_or_duration")
 
 # --- year_of_event ---
         .filter((col('year_of_event') >= 1896) & (col('year_of_event') <= 2022))
@@ -36,11 +39,11 @@ def cleaned_marathos():
         .withColumn("event_name", regexp_replace(col("event_name"), r'[\"<>]', ''))
 
 # --- remove d (days) and Etappen ---
-        .filter(~col("event_distance_or_length").rlike(r"^\d+\.?\d*d"))
-        .filter(~col("event_distance_or_length").contains("Etappen"))
+        .filter(~col("event_distance_or_duration").rlike(r"^\d+\.?\d*d"))
+        .filter(~col("event_distance_or_duration").contains("Etappen"))
 
 # --- unit_measure ---
-        .withColumn("unit_measure", regexp_extract(col("event_distance_or_length"), r"[a-zA-Z]+", 0))
+        .withColumn("unit_measure", regexp_extract(col("event_distance_or_duration"), r"[a-zA-Z]+", 0))
         .filter(~col("unit_measure").isin(["None", "m", "x", ""]))
         .withColumn("unit_measure",
             when(col("unit_measure").isin(["km", "Km", "k", "K"]), "km")
@@ -60,9 +63,9 @@ def cleaned_marathos():
         .withColumn("unit_value",
             spark_round(
                 when(col("unit_measure") == "mi",
-                    regexp_extract(col("event_distance_or_length"), r"(\d+\.?\d*)", 1).cast("double") * 1.60934)
+                    regexp_extract(col("event_distance_or_duration"), r"(\d+\.?\d*)", 1).cast("double") * 1.60934)
                 .otherwise(
-                    regexp_extract(col("event_distance_or_length"), r"(\d+\.?\d*)", 1).cast("double")
+                    regexp_extract(col("event_distance_or_duration"), r"(\d+\.?\d*)", 1).cast("double")
                 ),
                 2
             )
@@ -130,8 +133,9 @@ def cleaned_marathos():
             .otherwise(col("athlete_age_category"))
         )
 
+
 # --- deduplication ---
-        .dropDuplicates(["athlete_id", "event_name", "event_dates", "event_distance_or_length"])
+        .dropDuplicates(["athlete_id", "event_name", "event_dates", "event_distance_or_duration"])
 
 
 # These below were missing when I tried to run the dimensional model
