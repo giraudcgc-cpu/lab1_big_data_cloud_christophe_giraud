@@ -1,9 +1,18 @@
+--- Which age/gender groups run the furthest in duration races? ---
+--- For timed events (6h, 12h, 24h), athletes run as far as possible before time runs out.
+--- avg_run_distance_km: average distance covered in km before time ran out
+--- avg_speed_kmh: average speed in km/h
+--- duration_hours: race duration in hours (e.g. 6, 12, 24)
+--- total_runners: number of athletes in that age/gender group for that event
+
 USE CATALOG marathos_cat;
 USE SCHEMA gold;
 
-CREATE OR REFRESH MATERIALIZED VIEW marathos_cat.gold.mart_length_age_gender 
-COMMENT "Length of time by age bracket and gender - gold layer" AS
+CREATE OR REFRESH MATERIALIZED VIEW marathos_cat.gold.mart_duration_age_gender 
+COMMENT "Duration by age bracket and gender - gold layer" AS
 SELECT 
+    ROUND(AVG(f.run_distance_km), 2) AS avg_run_distance_km,
+    e.unit_value AS duration_hours,
     a.athlete_gender,
     CASE 
         WHEN f.age_at_event IS NULL THEN 'Unknown'
@@ -18,15 +27,14 @@ SELECT
         ELSE '100+'
     END AS age_bracket,
     e.event_name,
-    e.unit_value,
     COUNT(*) AS total_runners,
-    AVG(f.athlete_performance_value) AS avg_performance,
-    AVG(f.athlete_average_speed) AS avg_speed
+    ROUND(AVG(f.athlete_average_speed), 2) AS avg_speed_kmh
 FROM fct_result f
 LEFT JOIN dim_event e ON f.event_id = e.event_id
 LEFT JOIN dim_athlete a ON f.athlete_id = a.athlete_id
 WHERE e.event_type = 'duration'
 GROUP BY a.athlete_gender, age_bracket, e.event_name, e.unit_value
+ORDER BY avg_run_distance_km DESC
 
 
 

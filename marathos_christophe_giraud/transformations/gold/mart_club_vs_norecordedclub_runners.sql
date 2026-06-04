@@ -1,4 +1,7 @@
--- Here I was tempted to use "Club vs independant runners" but the "null" can either mean "no data recorded" or "no club".
+--- Do club members perform better than non-members?
+--- mart_club_vs_norecordedclub_runners 
+--- avg_performance_value: time in hours (distance races) or km covered (duration races) - mixed
+--- avg_speed_kmh is the universal metric (valid for both distance and duration events)
 
 USE CATALOG marathos_cat;
 USE SCHEMA gold;
@@ -10,9 +13,8 @@ SELECT
     a.athlete_gender,
     COUNT(DISTINCT a.athlete_id) AS total_athletes,
     COUNT(*) AS total_races,
-    AVG(f.athlete_performance_value) AS avg_performance,
-    AVG(f.athlete_average_speed) AS avg_speed,
-    AVG(a.athlete_year_of_birth) AS avg_birth_year
+    ROUND(AVG(f.athlete_average_speed), 2) AS avg_speed_kmh,
+    CAST(AVG(a.athlete_year_of_birth) AS INT) AS avg_birth_year
 FROM fct_result f
 LEFT JOIN dim_athlete a ON f.athlete_id = a.athlete_id
 LEFT JOIN dim_event e ON f.event_id = e.event_id

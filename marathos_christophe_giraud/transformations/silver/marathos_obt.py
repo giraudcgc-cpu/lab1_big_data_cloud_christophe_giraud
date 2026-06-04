@@ -19,16 +19,15 @@ def cleaned_marathos():
 # --- trim all strings ---
 # --- and renaming the column ---
         df
+        .withColumnRenamed("event_distance_or_length", "event_distance_or_duration")
         .withColumn("event_name", trim(col("event_name")))
         .withColumn("athlete_club", trim(col("athlete_club")))
         .withColumn("athlete_country", trim(col("athlete_country")))
         .withColumn("athlete_gender", trim(col("athlete_gender")))
         .withColumn("athlete_age_category", trim(col("athlete_age_category")))
-        .withColumn("event_distance_or_length", trim(col("event_distance_or_length")))
+        .withColumn("event_distance_or_duration", trim(col("event_distance_or_duration")))
         .withColumn("athlete_performance", trim(col("athlete_performance")))
-
-        .withColumnRenamed("event_distance_or_length", "event_distance_or_duration")
-
+   
 # --- year_of_event ---
         .filter((col('year_of_event') >= 1896) & (col('year_of_event') <= 2022))
 
@@ -36,7 +35,7 @@ def cleaned_marathos():
         .withColumn("event_dates", try_to_date(col("event_dates"), "dd.MM.yyyy"))
 
 # --- event_name ---
-        .withColumn("event_name", regexp_replace(col("event_name"), r'[\"<>]', ''))
+        .withColumn("event_name", regexp_replace(col("event_name"), r'[\"<>#\+]', ''))
 
 # --- remove d (days) and Etappen ---
         .filter(~col("event_distance_or_duration").rlike(r"^\d+\.?\d*d"))
@@ -75,18 +74,27 @@ def cleaned_marathos():
 # --- performance_unit ---
         .withColumn("performance_unit", regexp_extract(col("athlete_performance"), r"[a-zA-Z]+", 0))
 
-# --- athlete_performance_value ---
-        .withColumn("athlete_performance_value",
-            spark_round(
-                when(col("performance_unit") == "h",
+# --- I had athlete_performance_value which could be time or distance and was not only misleading but causing problems, so I split it into 2 ---
+# --- finish_time_hours (for distance events only) ---
+        .withColumn("finish_time_hours",
+            when(col("performance_unit") == "h",
+                spark_round(
                     regexp_extract(col("athlete_performance"), r"(\d+):(\d+):(\d+)", 1).cast("double") +
                     regexp_extract(col("athlete_performance"), r"(\d+):(\d+):(\d+)", 2).cast("double") / 60 +
-                    regexp_extract(col("athlete_performance"), r"(\d+):(\d+):(\d+)", 3).cast("double") / 3600
-                ).otherwise(
-                    regexp_extract(col("athlete_performance"), r"(\d+\.?\d*)", 1).cast("double")
-                ),
-                2
-            )
+                    regexp_extract(col("athlete_performance"), r"(\d+):(\d+):(\d+)", 3).cast("double") / 3600,
+                    2
+                )
+            ).otherwise(None)
+        )
+
+# --- run_distance_km (for duration events only) ---
+        .withColumn("run_distance_km",
+            when(col("performance_unit") != "h",
+                spark_round(
+                    regexp_extract(col("athlete_performance"), r"(\d+\.?\d*)", 1).cast("double"),
+                    2
+                )
+            ).otherwise(None)
         )
 
 # --- athlete_average_speed ---
@@ -125,6 +133,9 @@ def cleaned_marathos():
 
 # --- athlete_gender ---
         .filter(col("athlete_gender").isin(["M", "F"]))
+
+# --- athlete_id ---
+        .filter(col("athlete_id") > 0)
 
 # --- athlete_age_category ---
         .withColumn("athlete_age_category",
