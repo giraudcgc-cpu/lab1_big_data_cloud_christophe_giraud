@@ -354,705 +354,57 @@
       "name": "a2b74a85",
       "displayName": "athlete_focus",
       "queryLines": [
-        "SELECT\r\n",
-        "    f.athlete_id,\r\n",
-        "    a.athlete_gender,\r\n",
-        "    a.athlete_country,\r\n",
-        "    CASE WHEN a.athlete_club IS NULL THEN 'No club recorded' ELSE 'Club member' END AS runner_type,\r\n",
-        "    CASE \r\n",
-        "        WHEN f.age_at_event IS NULL THEN 'Unknown'\r\n",
-        "        WHEN f.age_at_event < 30 THEN 'Under 30'\r\n",
-        "        WHEN f.age_at_event < 40 THEN '30-39'\r\n",
-        "        WHEN f.age_at_event < 50 THEN '40-49'\r\n",
-        "        WHEN f.age_at_event < 60 THEN '50-59'\r\n",
-        "        WHEN f.age_at_event < 70 THEN '60-69'\r\n",
-        "        WHEN f.age_at_event < 80 THEN '70-79'\r\n",
-        "        ELSE '80+'\r\n",
-        "    END AS age_bracket,\r\n",
-        "    e.event_type,\r\n",
-        "    f.run_distance_km,\r\n",
-        "    f.finish_time_hours,\r\n",
-        "    f.athlete_average_speed\r\n",
-        "FROM marathos_cat.gold.fct_result f\r\n",
-        "LEFT JOIN marathos_cat.gold.dim_athlete a ON f.athlete_id = a.athlete_id\r\n",
-        "LEFT JOIN marathos_cat.gold.dim_event e ON f.event_id = e.event_id\r\n",
-        "WHERE f.athlete_average_speed IS NOT NULL\r\n"
-      ]
-    },
-    {
-      "name": "ab077a33",
-      "displayName": "athlete_focus_country",
-      "queryLines": [
-        "SELECT\r\n",
-        "    a.athlete_country,\r\n",
-        "    ROUND(AVG(f.athlete_average_speed), 2) AS avg_speed_kmh\r\n",
-        "FROM marathos_cat.gold.fct_result f\r\n",
-        "LEFT JOIN marathos_cat.gold.dim_athlete a ON f.athlete_id = a.athlete_id\r\n",
-        "WHERE f.athlete_average_speed IS NOT NULL\r\n",
-        "    AND a.athlete_country IS NOT NULL\r\n",
-        "GROUP BY a.athlete_country\r\n",
-        "ORDER BY avg_speed_kmh DESC\r\n",
-        "LIMIT 10;"
+        "SELECT *\r\n",
+        "FROM (\r\n",
+        "    SELECT\r\n",
+        "        f.athlete_id,\r\n",
+        "        a.athlete_gender,\r\n",
+        "        a.athlete_country,\r\n",
+        "        CASE WHEN a.athlete_club IS NULL THEN 'No club recorded' ELSE 'Club member' END AS runner_type,\r\n",
+        "        CASE \r\n",
+        "            WHEN f.age_at_event IS NULL THEN 'Unknown'\r\n",
+        "            WHEN f.age_at_event < 30 THEN 'Under 30'\r\n",
+        "            WHEN f.age_at_event < 40 THEN '30-39'\r\n",
+        "            WHEN f.age_at_event < 50 THEN '40-49'\r\n",
+        "            WHEN f.age_at_event < 60 THEN '50-59'\r\n",
+        "            WHEN f.age_at_event < 70 THEN '60-69'\r\n",
+        "            WHEN f.age_at_event < 80 THEN '70-79'\r\n",
+        "            WHEN f.age_at_event < 90 THEN '80-89'\r\n",
+        "            WHEN f.age_at_event < 100 THEN '90-99'\r\n",
+        "            ELSE '100+'\r\n",
+        "        END AS age_bracket,\r\n",
+        "        e.event_type,\r\n",
+        "        f.run_distance_km,\r\n",
+        "        f.finish_time_hours,\r\n",
+        "        f.athlete_average_speed\r\n",
+        "    FROM marathos_cat.gold.fct_result f\r\n",
+        "    LEFT JOIN marathos_cat.gold.dim_athlete a ON f.athlete_id = a.athlete_id\r\n",
+        "    LEFT JOIN marathos_cat.gold.dim_event e ON f.event_id = e.event_id\r\n",
+        "    WHERE f.athlete_average_speed IS NOT NULL\r\n",
+        "        AND a.athlete_country IS NOT NULL\r\n",
+        "        AND e.event_type IS NOT NULL\r\n",
+        ") sub\r\n",
+        "WHERE athlete_country IN (\r\n",
+        "    SELECT athlete_country\r\n",
+        "    FROM (\r\n",
+        "        SELECT a.athlete_country, AVG(f.athlete_average_speed) AS avg_speed\r\n",
+        "        FROM marathos_cat.gold.fct_result f\r\n",
+        "        LEFT JOIN marathos_cat.gold.dim_athlete a ON f.athlete_id = a.athlete_id\r\n",
+        "        WHERE f.athlete_average_speed IS NOT NULL\r\n",
+        "            AND a.athlete_country IS NOT NULL\r\n",
+        "        GROUP BY a.athlete_country\r\n",
+        "        ORDER BY avg_speed DESC\r\n",
+        "        LIMIT 10\r\n",
+        "    )\r\n",
+        ")"
       ]
     }
   ],
   "pages": [
     {
-      "name": "cbc8a1e7",
-      "displayName": "Country Specific",
-      "layout": [
-        {
-          "widget": {
-            "name": "ca02af41",
-            "queries": [
-              {
-                "name": "main_query",
-                "query": {
-                  "datasetName": "525dd1c8",
-                  "fields": [
-                    {
-                      "name": "athlete_country",
-                      "expression": "`athlete_country`"
-                    },
-                    {
-                      "name": "sum(total_races)",
-                      "expression": "SUM(`total_races`)"
-                    }
-                  ],
-                  "disaggregated": false
-                }
-              }
-            ],
-            "spec": {
-              "version": 3,
-              "widgetType": "bar",
-              "encodings": {
-                "x": {
-                  "fieldName": "athlete_country",
-                  "scale": {
-                    "type": "categorical"
-                  }
-                },
-                "y": {
-                  "fieldName": "sum(total_races)",
-                  "scale": {
-                    "type": "quantitative"
-                  }
-                },
-                "label": {
-                  "show": true
-                }
-              }
-            },
-            "specExtensions": {
-              "widgetBorderColor": {
-                "light": "#131212"
-              }
-            }
-          },
-          "position": {
-            "x": 0,
-            "y": 4,
-            "width": 6,
-            "height": 6
-          }
-        },
-        {
-          "widget": {
-            "name": "top-3-performers",
-            "queries": [
-              {
-                "name": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c15a718d7bbb57ecdf7f1fca6_total_races",
-                "query": {
-                  "datasetName": "d8d12200",
-                  "fields": [
-                    {
-                      "name": "total_races",
-                      "expression": "`total_races`"
-                    },
-                    {
-                      "name": "total_races_associativity",
-                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
-                    }
-                  ],
-                  "disaggregated": false
-                }
-              },
-              {
-                "name": "parameter_dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c338a17458d5f024ce3bfaec7_num_athlete_country",
-                "query": {
-                  "datasetName": "525dd1c8",
-                  "parameters": [
-                    {
-                      "name": "num_athlete_country",
-                      "keyword": "num_athlete_country"
-                    }
-                  ],
-                  "disaggregated": false
-                }
-              }
-            ],
-            "spec": {
-              "version": 2,
-              "frame": {
-                "showTitle": true,
-                "title": "Top Performers"
-              },
-              "widgetType": "filter-single-select",
-              "encodings": {
-                "fields": [
-                  {
-                    "parameterName": "num_athlete_country",
-                    "queryName": "parameter_dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c338a17458d5f024ce3bfaec7_num_athlete_country"
-                  },
-                  {
-                    "fieldName": "total_races",
-                    "queryName": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c15a718d7bbb57ecdf7f1fca6_total_races"
-                  }
-                ]
-              }
-            },
-            "specExtensions": {
-              "widgetBorderColor": {
-                "light": "#0D0C0C"
-              }
-            }
-          },
-          "position": {
-            "x": 0,
-            "y": 3,
-            "width": 4,
-            "height": 1
-          }
-        },
-        {
-          "widget": {
-            "name": "total",
-            "queries": [
-              {
-                "name": "main_query",
-                "query": {
-                  "datasetName": "525dd1c8",
-                  "fields": [
-                    {
-                      "name": "sum(total_races)",
-                      "expression": "SUM(`total_races`)"
-                    }
-                  ],
-                  "filters": [
-                    {
-                      "expression": "IN_RANGE(`total_races`, NULL, NULL)"
-                    }
-                  ],
-                  "disaggregated": false
-                }
-              }
-            ],
-            "spec": {
-              "version": 2,
-              "frame": {
-                "showTitle": true,
-                "title": "Total races"
-              },
-              "widgetType": "counter",
-              "encodings": {
-                "value": {
-                  "fieldName": "sum(total_races)"
-                }
-              }
-            }
-          },
-          "position": {
-            "x": 5,
-            "y": 0,
-            "width": 2,
-            "height": 2
-          }
-        },
-        {
-          "widget": {
-            "name": "countries",
-            "queries": [
-              {
-                "name": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c338a17458d5f024ce3bfaec7_athlete_country",
-                "query": {
-                  "datasetName": "525dd1c8",
-                  "fields": [
-                    {
-                      "name": "athlete_country",
-                      "expression": "`athlete_country`"
-                    },
-                    {
-                      "name": "athlete_country_associativity",
-                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
-                    }
-                  ],
-                  "disaggregated": false
-                }
-              },
-              {
-                "name": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c15a718d7bbb57ecdf7f1fca6_athlete_country",
-                "query": {
-                  "datasetName": "d8d12200",
-                  "fields": [
-                    {
-                      "name": "athlete_country",
-                      "expression": "`athlete_country`"
-                    },
-                    {
-                      "name": "athlete_country_associativity",
-                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
-                    }
-                  ],
-                  "disaggregated": false
-                }
-              }
-            ],
-            "spec": {
-              "version": 2,
-              "frame": {
-                "showTitle": true,
-                "title": "Country"
-              },
-              "disallowAll": false,
-              "widgetType": "filter-single-select",
-              "encodings": {
-                "fields": [
-                  {
-                    "fieldName": "athlete_country",
-                    "queryName": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c338a17458d5f024ce3bfaec7_athlete_country"
-                  },
-                  {
-                    "fieldName": "athlete_country",
-                    "queryName": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c15a718d7bbb57ecdf7f1fca6_athlete_country"
-                  }
-                ]
-              }
-            }
-          },
-          "position": {
-            "x": 0,
-            "y": 2,
-            "width": 4,
-            "height": 1
-          }
-        },
-        {
-          "widget": {
-            "name": "ff227eea",
-            "queries": [
-              {
-                "name": "main_query",
-                "query": {
-                  "datasetName": "525dd1c8",
-                  "fields": [
-                    {
-                      "name": "countdistinct(athlete_country)",
-                      "expression": "COUNT(DISTINCT `athlete_country`)"
-                    }
-                  ],
-                  "filters": [
-                    {
-                      "expression": "IN_RANGE(`total_races`, NULL, NULL)"
-                    }
-                  ],
-                  "disaggregated": false
-                }
-              }
-            ],
-            "spec": {
-              "version": 2,
-              "frame": {
-                "showTitle": true,
-                "title": "Total races"
-              },
-              "widgetType": "counter",
-              "encodings": {
-                "value": {
-                  "fieldName": "countdistinct(athlete_country)"
-                }
-              }
-            }
-          },
-          "position": {
-            "x": 7,
-            "y": 0,
-            "width": 2,
-            "height": 2
-          }
-        },
-        {
-          "widget": {
-            "name": "4f9e24ea",
-            "multilineTextboxSpec": {
-              "lines": [
-                "<span style=\"text-align:justify;display:block\"><span style=\"font-size:18px\">**Marathos Dashboard**</span> <br>Ultra- marathons analytics</span>"
-              ]
-            }
-          },
-          "position": {
-            "x": 0,
-            "y": 0,
-            "width": 4,
-            "height": 2
-          }
-        }
-      ],
-      "pageType": "PAGE_TYPE_CANVAS",
-      "layoutVersion": "GRID_V1"
-    },
-    {
       "name": "8ce08c9a",
       "displayName": "Global Filters",
       "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
-      "layoutVersion": "GRID_V1"
-    },
-    {
-      "name": "6474cec7",
-      "displayName": "option2",
-      "layout": [
-        {
-          "widget": {
-            "name": "5c8f39a9",
-            "multilineTextboxSpec": {
-              "lines": [
-                "<span style=\"text-align:justify;display:block\"><span style=\"font-size:24px\">**Marathos Dashboard <br>**</span> Ultra-marathons analytics</span>"
-              ]
-            }
-          },
-          "position": {
-            "x": 0,
-            "y": 0,
-            "width": 4,
-            "height": 2
-          }
-        },
-        {
-          "widget": {
-            "name": "t",
-            "queries": [
-              {
-                "name": "main_query",
-                "query": {
-                  "datasetName": "525dd1c8",
-                  "fields": [
-                    {
-                      "name": "total_races",
-                      "expression": "`total_races`"
-                    },
-                    {
-                      "name": "athlete_country",
-                      "expression": "`athlete_country`"
-                    }
-                  ],
-                  "disaggregated": true
-                }
-              }
-            ],
-            "spec": {
-              "version": 3,
-              "frame": {
-                "showTitle": true,
-                "title": "Top Countries by Participation",
-                "headerAlignment": "center"
-              },
-              "widgetType": "bar",
-              "encodings": {
-                "x": {
-                  "fieldName": "athlete_country",
-                  "displayName": "Country",
-                  "scale": {
-                    "type": "categorical"
-                  }
-                },
-                "y": {
-                  "fieldName": "total_races",
-                  "displayName": "Total Races",
-                  "scale": {
-                    "type": "quantitative"
-                  }
-                },
-                "label": {
-                  "show": false,
-                  "showTotal": true,
-                  "text": {
-                    "fieldName": "total_races",
-                    "displayName": "Total Races"
-                  }
-                }
-              }
-            }
-          },
-          "position": {
-            "x": 0,
-            "y": 2,
-            "width": 6,
-            "height": 5
-          }
-        },
-        {
-          "widget": {
-            "name": "speed",
-            "queries": [
-              {
-                "name": "main_query",
-                "query": {
-                  "datasetName": "54453406",
-                  "fields": [
-                    {
-                      "name": "athlete_gender",
-                      "expression": "`athlete_gender`"
-                    },
-                    {
-                      "name": "age_bracket",
-                      "expression": "`age_bracket`"
-                    },
-                    {
-                      "name": "avg(avg_speed_kmh)",
-                      "expression": "AVG(`avg_speed_kmh`)"
-                    }
-                  ],
-                  "disaggregated": false
-                }
-              }
-            ],
-            "spec": {
-              "version": 3,
-              "frame": {
-                "showTitle": true,
-                "title": "Speed by Age Group (km/h)",
-                "headerAlignment": "center"
-              },
-              "widgetType": "scatter",
-              "encodings": {
-                "x": {
-                  "fieldName": "age_bracket",
-                  "displayName": "Age groups",
-                  "scale": {
-                    "type": "categorical"
-                  }
-                },
-                "y": {
-                  "fieldName": "avg(avg_speed_kmh)",
-                  "displayName": "Average Speed ",
-                  "scale": {
-                    "type": "quantitative"
-                  }
-                },
-                "color": {
-                  "fieldName": "athlete_gender",
-                  "displayName": "Genders",
-                  "scale": {
-                    "type": "categorical"
-                  }
-                }
-              }
-            }
-          },
-          "position": {
-            "x": 6,
-            "y": 7,
-            "width": 6,
-            "height": 6
-          }
-        },
-        {
-          "widget": {
-            "name": "club-vs",
-            "queries": [
-              {
-                "name": "main_query",
-                "query": {
-                  "datasetName": "861ae4df",
-                  "fields": [
-                    {
-                      "name": "sum(total_races)",
-                      "expression": "SUM(`total_races`)"
-                    },
-                    {
-                      "name": "runner_type",
-                      "expression": "`runner_type`"
-                    }
-                  ],
-                  "disaggregated": false
-                }
-              }
-            ],
-            "spec": {
-              "version": 3,
-              "frame": {
-                "showTitle": true,
-                "title": "Participation: Club vs no Club ",
-                "headerAlignment": "center"
-              },
-              "widgetType": "pie",
-              "encodings": {
-                "angle": {
-                  "fieldName": "sum(total_races)",
-                  "scale": {
-                    "type": "quantitative"
-                  },
-                  "displayName": "Races"
-                },
-                "color": {
-                  "fieldName": "runner_type",
-                  "displayName": "Runner Types",
-                  "scale": {
-                    "type": "categorical"
-                  }
-                },
-                "label": {
-                  "show": true
-                }
-              }
-            }
-          },
-          "position": {
-            "x": 0,
-            "y": 7,
-            "width": 6,
-            "height": 6
-          }
-        },
-        {
-          "widget": {
-            "name": "top-5-athletes-per-duration-event",
-            "queries": [
-              {
-                "name": "main_query",
-                "query": {
-                  "datasetName": "9f027c9f",
-                  "fields": [
-                    {
-                      "name": "rank",
-                      "expression": "`rank`"
-                    },
-                    {
-                      "name": "run_distance_km",
-                      "expression": "`run_distance_km`"
-                    },
-                    {
-                      "name": "avg_speed_kmh",
-                      "expression": "`avg_speed_kmh`"
-                    },
-                    {
-                      "name": "athlete_id",
-                      "expression": "`athlete_id`"
-                    },
-                    {
-                      "name": "athlete_gender",
-                      "expression": "`athlete_gender`"
-                    },
-                    {
-                      "name": "athlete_country",
-                      "expression": "`athlete_country`"
-                    },
-                    {
-                      "name": "event_name",
-                      "expression": "`event_name`"
-                    }
-                  ],
-                  "disaggregated": true
-                }
-              }
-            ],
-            "spec": {
-              "version": 2,
-              "frame": {
-                "showTitle": true,
-                "title": "Top 5 Superhuman Athletes (duration event)\n\n",
-                "headerAlignment": "center"
-              },
-              "widgetType": "table",
-              "encodings": {
-                "columns": [
-                  {
-                    "fieldName": "rank",
-                    "displayName": "Rank"
-                  },
-                  {
-                    "fieldName": "run_distance_km",
-                    "displayName": "Run Distance"
-                  },
-                  {
-                    "fieldName": "avg_speed_kmh",
-                    "displayName": "Average Speed (Km/h)"
-                  },
-                  {
-                    "fieldName": "athlete_id",
-                    "displayName": "Athlete ID"
-                  },
-                  {
-                    "fieldName": "athlete_gender",
-                    "displayName": "Gender"
-                  },
-                  {
-                    "fieldName": "athlete_country",
-                    "displayName": "Athlete Country"
-                  },
-                  {
-                    "fieldName": "event_name",
-                    "displayName": "Event"
-                  }
-                ]
-              }
-            }
-          },
-          "position": {
-            "x": 0,
-            "y": 13,
-            "width": 12,
-            "height": 15
-          }
-        },
-        {
-          "widget": {
-            "name": "country",
-            "queries": [
-              {
-                "name": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c338a17458d5f024ce3bfaec7_athlete_country",
-                "query": {
-                  "datasetName": "525dd1c8",
-                  "fields": [
-                    {
-                      "name": "athlete_country",
-                      "expression": "`athlete_country`"
-                    },
-                    {
-                      "name": "athlete_country_associativity",
-                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
-                    }
-                  ],
-                  "disaggregated": false
-                }
-              }
-            ],
-            "spec": {
-              "version": 2,
-              "frame": {
-                "showTitle": true,
-                "title": "Country"
-              },
-              "widgetType": "filter-single-select",
-              "encodings": {
-                "fields": [
-                  {
-                    "fieldName": "athlete_country",
-                    "queryName": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c338a17458d5f024ce3bfaec7_athlete_country"
-                  }
-                ]
-              }
-            }
-          },
-          "position": {
-            "x": 4,
-            "y": 0,
-            "width": 4,
-            "height": 1
-          }
-        }
-      ],
-      "pageType": "PAGE_TYPE_CANVAS",
       "layoutVersion": "GRID_V1"
     },
     {
@@ -1328,15 +680,19 @@
               {
                 "name": "main_query",
                 "query": {
-                  "datasetName": "ab077a33",
+                  "datasetName": "a2b74a85",
                   "fields": [
+                    {
+                      "name": "athlete_gender",
+                      "expression": "`athlete_gender`"
+                    },
+                    {
+                      "name": "avg(athlete_average_speed)",
+                      "expression": "AVG(`athlete_average_speed`)"
+                    },
                     {
                       "name": "athlete_country",
                       "expression": "`athlete_country`"
-                    },
-                    {
-                      "name": "sum(avg_speed_kmh)",
-                      "expression": "SUM(`avg_speed_kmh`)"
                     }
                   ],
                   "disaggregated": false
@@ -1350,21 +706,31 @@
                 "headerAlignment": "center",
                 "title": "Top 10 Countries by Speed"
               },
-              "widgetType": "scatter",
+              "widgetType": "bar",
               "encodings": {
                 "x": {
-                  "fieldName": "athlete_country",
-                  "displayName": "Country",
-                  "scale": {
-                    "type": "categorical"
-                  }
-                },
-                "y": {
-                  "fieldName": "sum(avg_speed_kmh)",
+                  "fieldName": "avg(athlete_average_speed)",
                   "displayName": "Average Speed",
                   "scale": {
                     "type": "quantitative"
                   }
+                },
+                "y": {
+                  "fieldName": "athlete_country",
+                  "displayName": "Athlete Country",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "athlete_gender",
+                  "displayName": "Genders",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
                 }
               }
             }
@@ -1425,7 +791,7 @@
         },
         {
           "widget": {
-            "name": "9653591d",
+            "name": "spor",
             "queries": [
               {
                 "name": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f16078a1bf150aba91e59c035a63d3_event_type",
@@ -1448,7 +814,8 @@
             "spec": {
               "version": 2,
               "frame": {
-                "showTitle": true
+                "showTitle": true,
+                "title": "Challenge Type"
               },
               "widgetType": "filter-single-select",
               "encodings": {

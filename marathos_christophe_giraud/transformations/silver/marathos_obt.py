@@ -1,5 +1,5 @@
 from pyspark import pipelines as dp
-from pyspark.sql.functions import col, trim, regexp_replace, when, regexp_extract, upper, sha2
+from pyspark.sql.functions import col, trim, regexp_replace, when, regexp_extract, upper, sha2, coalesce, lit
 from pyspark.sql.functions import round as spark_round, try_to_date
 from utils.utils import rename_columns_to_snake_case
 
@@ -144,6 +144,11 @@ def cleaned_marathos():
             .otherwise(col("athlete_age_category"))
         )
 
+# --- Added to handle more nulls / Checked with Kokchun ---
+        .dropna(subset=["athlete_year_of_birth", "athlete_average_speed", "event_type", "event_dates"])
+        .withColumn("athlete_club", coalesce(col("athlete_club"), lit("No club recorded")))
+        .withColumn("athlete_country", coalesce(col("athlete_country"), lit("Unknown")))
+        .withColumn("athlete_age_category", coalesce(col("athlete_age_category"), lit("Unknown")))
 
 # --- deduplication ---
         .dropDuplicates(["athlete_id", "event_name", "event_dates", "event_distance_or_duration"])
