@@ -1,0 +1,1482 @@
+{
+  "datasets": [
+    {
+      "name": "d8d12200",
+      "displayName": "mart_distance_by_country",
+      "config": {
+        "version": "1.1",
+        "source": "marathos_cat.gold.mart_distance_by_country",
+        "dimensions": [
+          {
+            "name": "athlete_country",
+            "expr": "source.athlete_country",
+            "displayName": "Athlete Country"
+          },
+          {
+            "name": "total_races",
+            "expr": "source.total_races",
+            "displayName": "Total Races"
+          },
+          {
+            "name": "total_athletes",
+            "expr": "source.total_athletes",
+            "displayName": "Total Athletes"
+          },
+          {
+            "name": "avg_speed_kmh",
+            "expr": "source.avg_speed_kmh",
+            "displayName": "Avg Speed Kmh"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "525dd1c8",
+      "displayName": "countries_with_most_races",
+      "queryLines": [
+        "SELECT \r\n",
+        "    athlete_country,\r\n",
+        "    total_races\r\n",
+        "FROM marathos_cat.gold.mart_distance_by_country\r\n",
+        "ORDER BY total_races DESC\r\n",
+        "LIMIT :num_athlete_country;\r\n",
+        "    "
+      ],
+      "parameters": [
+        {
+          "displayName": "num_athlete_country",
+          "keyword": "num_athlete_country",
+          "dataType": "INTEGER",
+          "defaultSelection": {
+            "values": {
+              "dataType": "INTEGER",
+              "values": [
+                {
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7c2a1926",
+      "displayName": "mart_distance_by_age_gender",
+      "config": {
+        "version": "1.1",
+        "source": "marathos_cat.gold.mart_distance_by_age_gender",
+        "dimensions": [
+          {
+            "name": "distance_km",
+            "expr": "source.distance_km",
+            "displayName": "Distance Km"
+          },
+          {
+            "name": "athlete_gender",
+            "expr": "source.athlete_gender",
+            "displayName": "Athlete Gender"
+          },
+          {
+            "name": "age_bracket",
+            "expr": "source.age_bracket",
+            "displayName": "Age Bracket"
+          },
+          {
+            "name": "event_name",
+            "expr": "source.event_name",
+            "displayName": "Event Name"
+          },
+          {
+            "name": "total_runners",
+            "expr": "source.total_runners",
+            "displayName": "Total Runners"
+          },
+          {
+            "name": "avg_finish_time_hours",
+            "expr": "source.avg_finish_time_hours",
+            "displayName": "Avg Finish Time Hours"
+          },
+          {
+            "name": "avg_speed_kmh",
+            "expr": "source.avg_speed_kmh",
+            "displayName": "Avg Speed Kmh"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "f508d99e",
+      "displayName": "avg_gender_speed_diff",
+      "queryLines": [
+        "SELECT\r\n",
+        "    athlete_gender,\r\n",
+        "    ROUND(AVG(avg_speed_kmh), 2) AS avg_speed_kmh\r\n",
+        "FROM\r\n",
+        "    marathos_cat.gold.mart_distance_by_age_gender\r\n",
+        "GROUP BY athlete_gender;"
+      ]
+    },
+    {
+      "name": "848536bd",
+      "displayName": "avg_gender_distance_diff",
+      "queryLines": [
+        "SELECT\r\n",
+        "    athlete_gender,\r\n",
+        "    ROUND(AVG(distance_km), 2) AS avg_distance_km,\r\n",
+        "    ROUND(AVG(avg_finish_time_hours), 2) AS avg_duration_hours\r\n",
+        "FROM\r\n",
+        "    marathos_cat.gold.mart_distance_by_age_gender\r\n",
+        "GROUP BY\r\n",
+        "    athlete_gender;"
+      ]
+    },
+    {
+      "name": "c7974baf",
+      "displayName": "mart_club_vs_norecordedclub_runners",
+      "config": {
+        "version": "1.1",
+        "source": "marathos_cat.gold.mart_club_vs_norecordedclub_runners",
+        "dimensions": [
+          {
+            "name": "runner_type",
+            "expr": "source.runner_type",
+            "displayName": "Runner Type"
+          },
+          {
+            "name": "athlete_gender",
+            "expr": "source.athlete_gender",
+            "displayName": "Athlete Gender"
+          },
+          {
+            "name": "total_athletes",
+            "expr": "source.total_athletes",
+            "displayName": "Total Athletes"
+          },
+          {
+            "name": "total_races",
+            "expr": "source.total_races",
+            "displayName": "Total Races"
+          },
+          {
+            "name": "avg_speed_kmh",
+            "expr": "source.avg_speed_kmh",
+            "displayName": "Avg Speed Kmh"
+          },
+          {
+            "name": "avg_birth_year",
+            "expr": "source.avg_birth_year",
+            "displayName": "Avg Birth Year"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "d9140806",
+      "displayName": "mart_duration_age_gender",
+      "config": {
+        "version": "1.1",
+        "source": "marathos_cat.gold.mart_duration_age_gender",
+        "dimensions": [
+          {
+            "name": "avg_run_distance_km",
+            "expr": "source.avg_run_distance_km",
+            "displayName": "Avg Run Distance Km"
+          },
+          {
+            "name": "duration_hours",
+            "expr": "source.duration_hours",
+            "displayName": "Duration Hours"
+          },
+          {
+            "name": "athlete_gender",
+            "expr": "source.athlete_gender",
+            "displayName": "Athlete Gender"
+          },
+          {
+            "name": "age_bracket",
+            "expr": "source.age_bracket",
+            "displayName": "Age Bracket"
+          },
+          {
+            "name": "event_name",
+            "expr": "source.event_name",
+            "displayName": "Event Name"
+          },
+          {
+            "name": "total_runners",
+            "expr": "source.total_runners",
+            "displayName": "Total Runners"
+          },
+          {
+            "name": "avg_speed_kmh",
+            "expr": "source.avg_speed_kmh",
+            "displayName": "Avg Speed Kmh"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "4c00506b",
+      "displayName": "mart_top5_duration_event",
+      "config": {
+        "version": "1.1",
+        "source": "marathos_cat.gold.mart_top5_duration_event",
+        "dimensions": [
+          {
+            "name": "event_name",
+            "expr": "source.event_name",
+            "displayName": "Event Name"
+          },
+          {
+            "name": "athlete_id",
+            "expr": "source.athlete_id",
+            "displayName": "Athlete Id"
+          },
+          {
+            "name": "athlete_gender",
+            "expr": "source.athlete_gender",
+            "displayName": "Athlete Gender"
+          },
+          {
+            "name": "athlete_country",
+            "expr": "source.athlete_country",
+            "displayName": "Athlete Country"
+          },
+          {
+            "name": "run_distance_km",
+            "expr": "source.run_distance_km",
+            "displayName": "Run Distance Km"
+          },
+          {
+            "name": "avg_speed_kmh",
+            "expr": "source.avg_speed_kmh",
+            "displayName": "Avg Speed Kmh"
+          },
+          {
+            "name": "rank",
+            "expr": "source.rank",
+            "displayName": "Rank"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "54453406",
+      "displayName": "speed_age_gender",
+      "queryLines": [
+        "SELECT *\r\n",
+        "FROM marathos_cat.gold.mart_distance_by_age_gender\r\n",
+        "WHERE age_bracket != 'Unknown'\r\n",
+        "ORDER BY\r\n",
+        "    CASE age_bracket\r\n",
+        "        WHEN 'Under 30' THEN 1\r\n",
+        "        WHEN '30-39' THEN 2\r\n",
+        "        WHEN '40-49' THEN 3\r\n",
+        "        WHEN '50-59' THEN 4\r\n",
+        "        WHEN '60-69' THEN 5\r\n",
+        "        WHEN '70-79' THEN 6\r\n",
+        "        WHEN '80-89' THEN 7\r\n",
+        "        WHEN '90-99' THEN 8\r\n",
+        "        WHEN '100+' THEN 9\r\n",
+        "    END"
+      ]
+    },
+    {
+      "name": "861ae4df",
+      "displayName": "club_no_club",
+      "queryLines": [
+        "SELECT\r\n",
+        "    runner_type,\r\n",
+        "    SUM(total_races) AS total_races\r\n",
+        "FROM marathos_cat.gold.mart_club_vs_norecordedclub_runners\r\n",
+        "GROUP BY runner_type;"
+      ]
+    },
+    {
+      "name": "9f027c9f",
+      "displayName": "top5_runners_duration",
+      "queryLines": [
+        "SELECT\r\n",
+        "    rank,\r\n",
+        "    run_distance_km,\r\n",
+        "    avg_speed_kmh,\r\n",
+        "    athlete_id,\r\n",
+        "    athlete_gender,\r\n",
+        "    athlete_country,\r\n",
+        "    event_name\r\n",
+        "FROM marathos_cat.gold.mart_top5_duration_event\r\n",
+        "ORDER BY event_name, rank\r\n",
+        "LIMIT 20"
+      ]
+    },
+    {
+      "name": "a2b74a85",
+      "displayName": "athlete_focus",
+      "queryLines": [
+        "SELECT\r\n",
+        "    f.athlete_id,\r\n",
+        "    a.athlete_gender,\r\n",
+        "    a.athlete_country,\r\n",
+        "    CASE WHEN a.athlete_club IS NULL THEN 'No club recorded' ELSE 'Club member' END AS runner_type,\r\n",
+        "    CASE \r\n",
+        "        WHEN f.age_at_event IS NULL THEN 'Unknown'\r\n",
+        "        WHEN f.age_at_event < 30 THEN 'Under 30'\r\n",
+        "        WHEN f.age_at_event < 40 THEN '30-39'\r\n",
+        "        WHEN f.age_at_event < 50 THEN '40-49'\r\n",
+        "        WHEN f.age_at_event < 60 THEN '50-59'\r\n",
+        "        WHEN f.age_at_event < 70 THEN '60-69'\r\n",
+        "        WHEN f.age_at_event < 80 THEN '70-79'\r\n",
+        "        ELSE '80+'\r\n",
+        "    END AS age_bracket,\r\n",
+        "    e.event_type,\r\n",
+        "    f.run_distance_km,\r\n",
+        "    f.finish_time_hours,\r\n",
+        "    f.athlete_average_speed\r\n",
+        "FROM marathos_cat.gold.fct_result f\r\n",
+        "LEFT JOIN marathos_cat.gold.dim_athlete a ON f.athlete_id = a.athlete_id\r\n",
+        "LEFT JOIN marathos_cat.gold.dim_event e ON f.event_id = e.event_id\r\n",
+        "WHERE f.athlete_average_speed IS NOT NULL\r\n"
+      ]
+    },
+    {
+      "name": "ab077a33",
+      "displayName": "athlete_focus_country",
+      "queryLines": [
+        "SELECT\r\n",
+        "    a.athlete_country,\r\n",
+        "    ROUND(AVG(f.athlete_average_speed), 2) AS avg_speed_kmh\r\n",
+        "FROM marathos_cat.gold.fct_result f\r\n",
+        "LEFT JOIN marathos_cat.gold.dim_athlete a ON f.athlete_id = a.athlete_id\r\n",
+        "WHERE f.athlete_average_speed IS NOT NULL\r\n",
+        "    AND a.athlete_country IS NOT NULL\r\n",
+        "GROUP BY a.athlete_country\r\n",
+        "ORDER BY avg_speed_kmh DESC\r\n",
+        "LIMIT 10;"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "cbc8a1e7",
+      "displayName": "Country Specific",
+      "layout": [
+        {
+          "widget": {
+            "name": "ca02af41",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "525dd1c8",
+                  "fields": [
+                    {
+                      "name": "athlete_country",
+                      "expression": "`athlete_country`"
+                    },
+                    {
+                      "name": "sum(total_races)",
+                      "expression": "SUM(`total_races`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "athlete_country",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(total_races)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            },
+            "specExtensions": {
+              "widgetBorderColor": {
+                "light": "#131212"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "top-3-performers",
+            "queries": [
+              {
+                "name": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c15a718d7bbb57ecdf7f1fca6_total_races",
+                "query": {
+                  "datasetName": "d8d12200",
+                  "fields": [
+                    {
+                      "name": "total_races",
+                      "expression": "`total_races`"
+                    },
+                    {
+                      "name": "total_races_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c338a17458d5f024ce3bfaec7_num_athlete_country",
+                "query": {
+                  "datasetName": "525dd1c8",
+                  "parameters": [
+                    {
+                      "name": "num_athlete_country",
+                      "keyword": "num_athlete_country"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Top Performers"
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "parameterName": "num_athlete_country",
+                    "queryName": "parameter_dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c338a17458d5f024ce3bfaec7_num_athlete_country"
+                  },
+                  {
+                    "fieldName": "total_races",
+                    "queryName": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c15a718d7bbb57ecdf7f1fca6_total_races"
+                  }
+                ]
+              }
+            },
+            "specExtensions": {
+              "widgetBorderColor": {
+                "light": "#0D0C0C"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "total",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "525dd1c8",
+                  "fields": [
+                    {
+                      "name": "sum(total_races)",
+                      "expression": "SUM(`total_races`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "IN_RANGE(`total_races`, NULL, NULL)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Total races"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_races)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 5,
+            "y": 0,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "countries",
+            "queries": [
+              {
+                "name": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c338a17458d5f024ce3bfaec7_athlete_country",
+                "query": {
+                  "datasetName": "525dd1c8",
+                  "fields": [
+                    {
+                      "name": "athlete_country",
+                      "expression": "`athlete_country`"
+                    },
+                    {
+                      "name": "athlete_country_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c15a718d7bbb57ecdf7f1fca6_athlete_country",
+                "query": {
+                  "datasetName": "d8d12200",
+                  "fields": [
+                    {
+                      "name": "athlete_country",
+                      "expression": "`athlete_country`"
+                    },
+                    {
+                      "name": "athlete_country_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Country"
+              },
+              "disallowAll": false,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "athlete_country",
+                    "queryName": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c338a17458d5f024ce3bfaec7_athlete_country"
+                  },
+                  {
+                    "fieldName": "athlete_country",
+                    "queryName": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c15a718d7bbb57ecdf7f1fca6_athlete_country"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "ff227eea",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "525dd1c8",
+                  "fields": [
+                    {
+                      "name": "countdistinct(athlete_country)",
+                      "expression": "COUNT(DISTINCT `athlete_country`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "IN_RANGE(`total_races`, NULL, NULL)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Total races"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "countdistinct(athlete_country)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 7,
+            "y": 0,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "4f9e24ea",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:justify;display:block\"><span style=\"font-size:18px\">**Marathos Dashboard**</span> <br>Ultra- marathons analytics</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "8ce08c9a",
+      "displayName": "Global Filters",
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "6474cec7",
+      "displayName": "option2",
+      "layout": [
+        {
+          "widget": {
+            "name": "5c8f39a9",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:justify;display:block\"><span style=\"font-size:24px\">**Marathos Dashboard <br>**</span> Ultra-marathons analytics</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "t",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "525dd1c8",
+                  "fields": [
+                    {
+                      "name": "total_races",
+                      "expression": "`total_races`"
+                    },
+                    {
+                      "name": "athlete_country",
+                      "expression": "`athlete_country`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Top Countries by Participation",
+                "headerAlignment": "center"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "athlete_country",
+                  "displayName": "Country",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "total_races",
+                  "displayName": "Total Races",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": false,
+                  "showTotal": true,
+                  "text": {
+                    "fieldName": "total_races",
+                    "displayName": "Total Races"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "speed",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "54453406",
+                  "fields": [
+                    {
+                      "name": "athlete_gender",
+                      "expression": "`athlete_gender`"
+                    },
+                    {
+                      "name": "age_bracket",
+                      "expression": "`age_bracket`"
+                    },
+                    {
+                      "name": "avg(avg_speed_kmh)",
+                      "expression": "AVG(`avg_speed_kmh`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Speed by Age Group (km/h)",
+                "headerAlignment": "center"
+              },
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "age_bracket",
+                  "displayName": "Age groups",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(avg_speed_kmh)",
+                  "displayName": "Average Speed ",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "athlete_gender",
+                  "displayName": "Genders",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 7,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "club-vs",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "861ae4df",
+                  "fields": [
+                    {
+                      "name": "sum(total_races)",
+                      "expression": "SUM(`total_races`)"
+                    },
+                    {
+                      "name": "runner_type",
+                      "expression": "`runner_type`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Participation: Club vs no Club ",
+                "headerAlignment": "center"
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "sum(total_races)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Races"
+                },
+                "color": {
+                  "fieldName": "runner_type",
+                  "displayName": "Runner Types",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "top-5-athletes-per-duration-event",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "9f027c9f",
+                  "fields": [
+                    {
+                      "name": "rank",
+                      "expression": "`rank`"
+                    },
+                    {
+                      "name": "run_distance_km",
+                      "expression": "`run_distance_km`"
+                    },
+                    {
+                      "name": "avg_speed_kmh",
+                      "expression": "`avg_speed_kmh`"
+                    },
+                    {
+                      "name": "athlete_id",
+                      "expression": "`athlete_id`"
+                    },
+                    {
+                      "name": "athlete_gender",
+                      "expression": "`athlete_gender`"
+                    },
+                    {
+                      "name": "athlete_country",
+                      "expression": "`athlete_country`"
+                    },
+                    {
+                      "name": "event_name",
+                      "expression": "`event_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Top 5 Superhuman Athletes (duration event)\n\n",
+                "headerAlignment": "center"
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "rank",
+                    "displayName": "Rank"
+                  },
+                  {
+                    "fieldName": "run_distance_km",
+                    "displayName": "Run Distance"
+                  },
+                  {
+                    "fieldName": "avg_speed_kmh",
+                    "displayName": "Average Speed (Km/h)"
+                  },
+                  {
+                    "fieldName": "athlete_id",
+                    "displayName": "Athlete ID"
+                  },
+                  {
+                    "fieldName": "athlete_gender",
+                    "displayName": "Gender"
+                  },
+                  {
+                    "fieldName": "athlete_country",
+                    "displayName": "Athlete Country"
+                  },
+                  {
+                    "fieldName": "event_name",
+                    "displayName": "Event"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 13,
+            "width": 12,
+            "height": 15
+          }
+        },
+        {
+          "widget": {
+            "name": "country",
+            "queries": [
+              {
+                "name": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c338a17458d5f024ce3bfaec7_athlete_country",
+                "query": {
+                  "datasetName": "525dd1c8",
+                  "fields": [
+                    {
+                      "name": "athlete_country",
+                      "expression": "`athlete_country`"
+                    },
+                    {
+                      "name": "athlete_country_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Country"
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "athlete_country",
+                    "queryName": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f15f9c338a17458d5f024ce3bfaec7_athlete_country"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "63afa5df",
+      "displayName": "Athlete Specific",
+      "layout": [
+        {
+          "widget": {
+            "name": "df0618e0",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:justify;display:block\"><span style=\"font-size:24px\">**Marathos Dashboard <br>**</span> Ultra-marathons analytics</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "total",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "a2b74a85",
+                  "fields": [
+                    {
+                      "name": "countdistinct(athlete_id)",
+                      "expression": "COUNT(DISTINCT `athlete_id`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Total Athletes",
+                "headerAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "countdistinct(athlete_id)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "40853769",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "a2b74a85",
+                  "fields": [
+                    {
+                      "name": "avg(athlete_average_speed)",
+                      "expression": "AVG(`athlete_average_speed`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Avg speed",
+                "headerAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg(athlete_average_speed)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "661beb6e",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "a2b74a85",
+                  "fields": [
+                    {
+                      "name": "avg(run_distance_km)",
+                      "expression": "AVG(`run_distance_km`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Avg distance covered",
+                "headerAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg(run_distance_km)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "speed-by-age-bracket",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "a2b74a85",
+                  "fields": [
+                    {
+                      "name": "athlete_gender",
+                      "expression": "`athlete_gender`"
+                    },
+                    {
+                      "name": "age_bracket",
+                      "expression": "`age_bracket`"
+                    },
+                    {
+                      "name": "avg(athlete_average_speed)",
+                      "expression": "AVG(`athlete_average_speed`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Speed (km/h) by age bracket",
+                "headerAlignment": "center"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "age_bracket",
+                  "displayName": "Age groups",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(athlete_average_speed)",
+                  "displayName": "Average Speed",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "athlete_gender",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "club-vs-no-club",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "a2b74a85",
+                  "fields": [
+                    {
+                      "name": "countdistinct(athlete_id)",
+                      "expression": "COUNT(DISTINCT `athlete_id`)"
+                    },
+                    {
+                      "name": "runner_type",
+                      "expression": "`runner_type`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": " Club vs no club",
+                "headerAlignment": "center"
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "countdistinct(athlete_id)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Athletes"
+                },
+                "color": {
+                  "fieldName": "runner_type",
+                  "displayName": "Runner Types",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 10,
+            "width": 5,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "top-10-countries-by-speed",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ab077a33",
+                  "fields": [
+                    {
+                      "name": "athlete_country",
+                      "expression": "`athlete_country`"
+                    },
+                    {
+                      "name": "sum(avg_speed_kmh)",
+                      "expression": "SUM(`avg_speed_kmh`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "headerAlignment": "center",
+                "title": "Top 10 Countries by Speed"
+              },
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "athlete_country",
+                  "displayName": "Country",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(avg_speed_kmh)",
+                  "displayName": "Average Speed",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 4,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "gender",
+            "queries": [
+              {
+                "name": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f16078a1bf150aba91e59c035a63d3_athlete_gender",
+                "query": {
+                  "datasetName": "a2b74a85",
+                  "fields": [
+                    {
+                      "name": "athlete_gender",
+                      "expression": "`athlete_gender`"
+                    },
+                    {
+                      "name": "athlete_gender_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "disallowAll": false,
+              "frame": {
+                "showTitle": true,
+                "title": "Gender"
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "athlete_gender",
+                    "queryName": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f16078a1bf150aba91e59c035a63d3_athlete_gender"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 0,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "9653591d",
+            "queries": [
+              {
+                "name": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f16078a1bf150aba91e59c035a63d3_event_type",
+                "query": {
+                  "datasetName": "a2b74a85",
+                  "fields": [
+                    {
+                      "name": "event_type",
+                      "expression": "`event_type`"
+                    },
+                    {
+                      "name": "event_type_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "event_type",
+                    "queryName": "dashboards/01f15f9b872813f796494eb92023d604/datasets/01f16078a1bf150aba91e59c035a63d3_event_type"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 7,
+            "y": 0,
+            "width": 3,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
