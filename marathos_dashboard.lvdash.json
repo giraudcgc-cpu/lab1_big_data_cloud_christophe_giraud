@@ -354,7 +354,20 @@
       "name": "a2b74a85",
       "displayName": "athlete_focus",
       "queryLines": [
-        "SELECT *\r\n",
+        "-- Used LLM to help with a part of the code and with the age group ascending order\r\n",
+        "\r\n",
+        "SELECT *,\r\n",
+        "    CASE age_bracket\r\n",
+        "        WHEN '1. Under 30' THEN 1\r\n",
+        "        WHEN '2. 30-39' THEN 2\r\n",
+        "        WHEN '3. 40-49' THEN 3\r\n",
+        "        WHEN '4. 50-59' THEN 4\r\n",
+        "        WHEN '5. 60-69' THEN 5\r\n",
+        "        WHEN '6. 70-79' THEN 6\r\n",
+        "        WHEN '7. 80-89' THEN 7\r\n",
+        "        WHEN '8. 90-99' THEN 8\r\n",
+        "        WHEN '9. 100+' THEN 9\r\n",
+        "    END AS age_sort\r\n",
         "FROM (\r\n",
         "    SELECT\r\n",
         "        f.athlete_id,\r\n",
@@ -363,15 +376,15 @@
         "        CASE WHEN a.athlete_club IS NULL THEN 'No club recorded' ELSE 'Club member' END AS runner_type,\r\n",
         "        CASE \r\n",
         "            WHEN f.age_at_event IS NULL THEN 'Unknown'\r\n",
-        "            WHEN f.age_at_event < 30 THEN 'Under 30'\r\n",
-        "            WHEN f.age_at_event < 40 THEN '30-39'\r\n",
-        "            WHEN f.age_at_event < 50 THEN '40-49'\r\n",
-        "            WHEN f.age_at_event < 60 THEN '50-59'\r\n",
-        "            WHEN f.age_at_event < 70 THEN '60-69'\r\n",
-        "            WHEN f.age_at_event < 80 THEN '70-79'\r\n",
-        "            WHEN f.age_at_event < 90 THEN '80-89'\r\n",
-        "            WHEN f.age_at_event < 100 THEN '90-99'\r\n",
-        "            ELSE '100+'\r\n",
+        "            WHEN f.age_at_event < 30 THEN '1. Under 30'\r\n",
+        "            WHEN f.age_at_event < 40 THEN '2. 30-39'\r\n",
+        "            WHEN f.age_at_event < 50 THEN '3. 40-49'\r\n",
+        "            WHEN f.age_at_event < 60 THEN '4. 50-59'\r\n",
+        "            WHEN f.age_at_event < 70 THEN '5. 60-69'\r\n",
+        "            WHEN f.age_at_event < 80 THEN '6. 70-79'\r\n",
+        "            WHEN f.age_at_event < 90 THEN '7. 80-89'\r\n",
+        "            WHEN f.age_at_event < 100 THEN '8. 90-99'\r\n",
+        "            ELSE '9. 100+'\r\n",
         "        END AS age_bracket,\r\n",
         "        e.event_type,\r\n",
         "        f.run_distance_km,\r\n",
@@ -396,7 +409,8 @@
         "        ORDER BY avg_speed DESC\r\n",
         "        LIMIT 10\r\n",
         "    )\r\n",
-        ")"
+        ")\r\n",
+        "ORDER BY age_sort"
       ]
     }
   ],
@@ -416,7 +430,7 @@
             "name": "df0618e0",
             "multilineTextboxSpec": {
               "lines": [
-                "<span style=\"text-align:justify;display:block\"><span style=\"font-size:24px\">**Marathos Dashboard <br>**</span> Ultra-marathons analytics</span>"
+                "<span style=\"text-align:justify;display:block\"><span style=\"font-size:24px\">**Marathos Dashboard**</span><span style=\"font-size:24px\"> </span>Ultra-marathons analytics</span>"
               ]
             }
           },
@@ -424,7 +438,7 @@
             "x": 0,
             "y": 0,
             "width": 4,
-            "height": 2
+            "height": 1
           }
         },
         {
@@ -461,7 +475,7 @@
             }
           },
           "position": {
-            "x": 3,
+            "x": 1,
             "y": 2,
             "width": 2,
             "height": 2
@@ -501,7 +515,7 @@
             }
           },
           "position": {
-            "x": 6,
+            "x": 4,
             "y": 2,
             "width": 2,
             "height": 2
@@ -541,7 +555,7 @@
             }
           },
           "position": {
-            "x": 9,
+            "x": 7,
             "y": 2,
             "width": 2,
             "height": 2
@@ -611,7 +625,7 @@
           "position": {
             "x": 0,
             "y": 4,
-            "width": 5,
+            "width": 6,
             "height": 6
           }
         },
@@ -668,7 +682,7 @@
           },
           "position": {
             "x": 0,
-            "y": 10,
+            "y": 11,
             "width": 5,
             "height": 7
           }
@@ -719,7 +733,10 @@
                   "fieldName": "athlete_country",
                   "displayName": "Athlete Country",
                   "scale": {
-                    "type": "categorical"
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
                   }
                 },
                 "color": {
@@ -783,8 +800,8 @@
             }
           },
           "position": {
-            "x": 4,
-            "y": 0,
+            "x": 2,
+            "y": 1,
             "width": 3,
             "height": 1
           }
@@ -829,10 +846,26 @@
             }
           },
           "position": {
-            "x": 7,
-            "y": 0,
+            "x": 5,
+            "y": 1,
             "width": 3,
             "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "6414872b",
+            "multilineTextboxSpec": {
+              "lines": [
+                "![](https://github.com/giraudcgc-cpu/lab1_big_data_cloud_christophe_giraud/blob/main/image_runner_nano_banana2.png?raw=true)"
+              ]
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 0,
+            "width": 3,
+            "height": 4
           }
         }
       ],
